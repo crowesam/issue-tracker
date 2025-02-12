@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, TextField, Callout, Text } from '@radix-ui/themes'
+import { Button, TextField, Callout, Text, Spinner } from '@radix-ui/themes'
 import SimpleMDE from "react-simplemde-editor";
 import { useForm, Controller } from "react-hook-form";
 import { useRouter } from 'next/navigation';
@@ -20,7 +20,7 @@ const NewIssuePage = () => {
   const { register, control, handleSubmit, formState: { errors } } = useForm<IssueForm>({ resolver: zodResolver(createIssueSchema) });
 
   const [error, setError] = useState('');
-
+const [isSubmitting, setIsSubmitting] = useState(false);
   return (
     <div className='max-w-xl' >
       {error && <Callout.Root color="red" className='mb-5'>
@@ -33,9 +33,11 @@ const NewIssuePage = () => {
         className='space-y-3'
         onSubmit={handleSubmit(async (data) => {
           try {
+            setIsSubmitting(true);
             await axios.post('/api/issues', data);
             router.push('/issues');
           } catch (error) {
+            setIsSubmitting(false);
             setError('An unexpected error occurred/ Please try again later');
           }
         })}>
@@ -49,7 +51,7 @@ const NewIssuePage = () => {
           render={({ field }) => <SimpleMDE placeholder='Description' {...field} />}
         />
         {errors.description && <Text color="red" as="p">{errors.description.message}</Text>}
-        <Button>Submit New Issue</Button>
+        <Button disabled={isSubmitting}>Submit New Issue{isSubmitting && <Spinner />}</Button>
       </form>
     </div>
   )

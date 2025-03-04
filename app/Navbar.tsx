@@ -1,9 +1,13 @@
-import { link } from 'fs'
+'use client';
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation';
 import React from 'react'
-import { FaCrow} from 'react-icons/fa'
+import { FaCrow} from 'react-icons/fa';
+import classnames from 'classnames';
 
 const Navbar = () => {
+   const currentPath = usePathname();
    const links = [
     {label: 'Dashboard' , href: '/'},
     {label: 'Issues' , href: '/issues'},
@@ -16,7 +20,12 @@ const Navbar = () => {
             {links.map(link => 
             <Link
                key={link.href} 
-               className="text-orange-300 hover:text-orange-500 transition-colors" href={link.href}>{link.label}</Link>
+               className={classnames({
+                  'text-orange-600': currentPath === link.href,
+                  'text-white': currentPath !== link.href,
+                  'hover:text-amber-400 transition-colors duration-200': true
+               })}
+                href={link.href}>{link.label}</Link>
             )}
         </ul>
     </nav>
